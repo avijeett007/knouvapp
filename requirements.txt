@@ -11,3 +11,4 @@ textual
 loguru
 librosa
 huggingface-hub[hf-transfer]
+pipecat-ai[ultravox]

@@ -22,5 +22,5 @@ COPY . .
 
 EXPOSE 8765
 
-# Run either in normal or maintenance mode
-CMD ["python3", "main.py"]
+# Always start uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8765"]
