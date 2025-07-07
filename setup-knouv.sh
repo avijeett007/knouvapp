@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🚀 Starting Ultravox server setup..."
+echo "🚀 Starting idempotent Ultravox server setup with NVIDIA driver 575..."
 
 #############################################
 # Update packages
@@ -16,6 +16,7 @@ sudo apt-get upgrade -y
 #############################################
 
 echo "🔧 Installing essential tools..."
+
 sudo apt-get install -y \
     build-essential \
     curl \
@@ -26,96 +27,168 @@ sudo apt-get install -y \
     gnupg
 
 #############################################
-# Install NVIDIA drivers + CUDA
+# NVIDIA Driver 575
 #############################################
 
-echo "🖥️ Installing NVIDIA drivers and CUDA..."
+echo "🖥️ Checking for NVIDIA driver..."
 
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID) 
-curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/${distribution}/x86_64/cuda-${distribution}.pin | sudo tee /etc/apt/preferences.d/cuda-repository-pin-600
-wget https://developer.download.nvidia.com/compute/cuda/repos/${distribution}/x86_64/cuda-repo-${distribution}_12.3.2-1_amd64.deb
-sudo dpkg -i cuda-repo-${distribution}_12.3.2-1_amd64.deb
-sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${distribution}/x86_64/3bf863cc.pub
-sudo apt-get update
-sudo apt-get -y install cuda
+if nvidia-smi > /dev/null 2>&1; then
+    echo "✅ NVIDIA driver already installed:"
+    nvidia-smi
+else
+    echo "🔧 Installing NVIDIA driver 575..."
 
-# Add CUDA to PATH
-echo 'export PATH=/usr/local/cuda/bin:${PATH}' >> ~/.bashrc
-echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}' >> ~/.bashrc
+    # Add NVIDIA repo GPG key if missing
+    if [ ! -f /etc/apt/keyrings/cuda-archive-keyring.gpg ]; then
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub | \
+            sudo gpg --dearmor -o /etc/apt/keyrings/cuda-archive-keyring.gpg
+    else
+        echo "✅ NVIDIA keyring already exists."
+    fi
 
-source ~/.bashrc
+    # Add CUDA repo if missing
+    if [ ! -f /etc/apt/sources.list.d/cuda.list ]; then
+        echo "deb [signed-by=/etc/apt/keyrings/cuda-archive-keyring.gpg] \
+https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" | \
+            sudo tee /etc/apt/sources.list.d/cuda.list
+    else
+        echo "✅ CUDA repo already configured."
+    fi
+
+    sudo apt-get update
+
+    # Install driver
+    sudo apt-get install -y nvidia-driver-575
+
+    # Install CUDA toolkit (without overwriting driver)
+    sudo apt-get install -y cuda-toolkit-12-3
+
+    # Add CUDA to PATH if not already in .bashrc
+    if ! grep -q "/usr/local/cuda/bin" ~/.bashrc; then
+        echo 'export PATH=/usr/local/cuda/bin:${PATH}' >> ~/.bashrc
+    fi
+
+    if ! grep -q "/usr/local/cuda/lib64" ~/.bashrc; then
+        echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}' >> ~/.bashrc
+    fi
+
+    echo "🔄 Reloading .bashrc..."
+    source ~/.bashrc
+
+    echo "✅ NVIDIA driver and CUDA toolkit installed."
+fi
 
 #############################################
-# Install Docker
+# Docker
 #############################################
 
-echo "🐳 Installing Docker..."
+echo "🐳 Checking for Docker..."
 
-sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
+if command -v docker > /dev/null 2>&1; then
+    echo "✅ Docker already installed: $(docker --version)"
+else
+    echo "🔧 Installing Docker..."
 
-# Add Docker GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    sudo apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        software-properties-common
 
-# Add Docker repo
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
-  https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+      https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    sudo apt-get update
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+fi
 
 #############################################
-# Install NVIDIA Container Toolkit
+# NVIDIA Container Toolkit
 #############################################
 
-echo "🔌 Installing NVIDIA Container Toolkit..."
+echo "🔌 Checking for NVIDIA Container Toolkit..."
 
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
-    sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+if dpkg -l | grep -q nvidia-container-toolkit; then
+    echo "✅ NVIDIA Container Toolkit already installed."
+else
+    echo "🔧 Installing NVIDIA Container Toolkit..."
 
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
-    sed 's#deb #deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] #' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    distribution="ubuntu22.04"
 
-sudo apt-get update
-sudo apt-get install -y nvidia-container-toolkit
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
+        sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 
-# Configure Docker to use NVIDIA runtime
-sudo nvidia-ctk runtime configure --runtime=docker
-sudo systemctl restart docker
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+        sed 's#deb #deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] #' | \
+        sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+    sudo apt-get update
+    sudo apt-get install -y nvidia-container-toolkit
+
+    sudo nvidia-ctk runtime configure --runtime=docker
+    sudo systemctl restart docker
+fi
+
+#############################################
+# Check NVIDIA driver
+#############################################
+
+echo "🧪 Checking nvidia-smi outside Docker..."
+
+if nvidia-smi > /dev/null 2>&1; then
+    nvidia-smi
+else
+    echo "❌ nvidia-smi still failing. Please reboot or check driver installation."
+    exit 1
+fi
 
 #############################################
 # Test NVIDIA Docker
 #############################################
 
 echo "🧪 Testing nvidia-smi in Docker..."
-sudo docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi
+
+if sudo docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi; then
+    echo "✅ NVIDIA runtime in Docker is working!"
+else
+    echo "❌ NVIDIA runtime failed in Docker. Check driver versions or restart Docker daemon."
+    exit 1
+fi
 
 #############################################
-# Build Docker image
+# Build Ultravox Docker image
 #############################################
 
-echo "🛠️ Building Docker image..."
+echo "🛠️ Checking if Ultravox Docker image already exists..."
 
-sudo docker build -t ultravox-app .
+if sudo docker images | grep -q ultravox-app; then
+    echo "✅ Docker image 'ultravox-app' already exists."
+else
+    echo "🔧 Building Docker image..."
+    sudo docker build -t ultravox-app .
+fi
 
 echo "✅ Ultravox server setup complete!"
 
 echo ""
 echo "✅ NEXT STEPS:"
 echo ""
-echo "1. Run your container:"
+echo "1. Create your .env file (if not already done):"
+echo ""
+echo "   cp .env.example .env"
+echo "   nano .env"
+echo ""
+echo "2. Run your container:"
 echo ""
 echo "   sudo docker run --rm --gpus all --env-file .env -p 8765:8765 ultravox-app"
 echo ""
-echo "2. Check health endpoint:"
+echo "3. Test your health endpoint:"
 echo ""
 echo "   curl http://localhost:8765/health"
 echo ""
