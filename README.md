@@ -26,6 +26,19 @@ Knouvapp is a sophisticated **self-hosted** Voice AI Agent platform that seamles
 - 🐳 **Docker Ready**: Containerized deployment for easy scaling
 - 🔧 **Environment Optimized**: Pre-configured for optimal performance
 
+---
+
+## 🚀 **Scale Your Voice AI Business**
+
+> **Building a Voice Agent is one thing, but selling the agent under your own brand is a different challenge.**
+
+If you want to take this to the next level and start selling Voice AI Agents whether self-hosted or from another provider like VAPI, Retell, or Ultravox, check out **[Knotie AI Pro](https://knotie-ai.pro)**.
+
+### 🎯 **Made for agencies to scale up the Voice AI Business**
+Knotie AI Pro provides the tools and infrastructure you need to commercialize and scale your voice AI solutions.
+
+---
+
 ## 🏗️ Architecture
 
 ```
@@ -96,6 +109,16 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,max_split_size_mb:16
 docker build -t knouvapp .
 docker run -p 8000:8000 --env-file .env knouvapp
 ```
+
+## 💰 Affordable GPU Resources
+
+Looking for a cheap provider to rent your GPU VM for running Ultravox and other AI models? **[Massed Compute](https://vm.massedcompute.com/signup?referral=dbESKKG8Ju)** is undoubtedly the cheapest option you can get in the market today.
+
+**Get 50% OFF on your next GPU Rented VM:**
+- **Affiliate Link**: [https://vm.massedcompute.com/signup?referral=dbESKKG8Ju](https://vm.massedcompute.com/signup?referral=dbESKKG8Ju)
+- **Discount Code**: `KNO2GETHERLABS` (50% OFF)
+
+Perfect for self-hosting your Voice AI agents with powerful GPU acceleration at an affordable price.
 
 ## 🎮 Usage
 
@@ -188,12 +211,6 @@ We welcome contributions! Please feel free to submit issues, feature requests, o
 ## 🎥 Learn More
 
 **Subscribe to [Kno2gether](https://www.youtube.com/@kno2gether) on YouTube** for tutorials, updates, and voice AI content!
-
-## 🚀 Scale Your Voice AI Business
-
-Building a Voice Agent is one thing, but selling the agent under your own brand is a different challenge. If you want to take this to the next level and start selling Voice AI Agents whether self-hosted or from another provider like VAPI, Retell, or Ultravox, check out **[Knotie AI Pro](https://knotie-ai.pro)**.
-
-**Made for agencies to scale up the Voice AI Business** - Knotie AI Pro provides the tools and infrastructure you need to commercialize and scale your voice AI solutions.
 
 ## 💬 Support & Self-Hosting
 
