@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-dotenv
+requests
+pipecat-ai[cartesia,daily,silero,ultravox]==0.0.62
+transformers
+vllm
+pyaudio
+pydantic-settings
+textual
+loguru
+librosa
+huggingface-hub[hf-transfer]
