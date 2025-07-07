@@ -1,0 +1,73 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="micGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#f5576c;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#4facfe;stop-opacity:0.4" />
+    </linearGradient>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradient)" stroke="url(#micGradient)" stroke-width="2"/>
+  
+  <!-- Sound Waves -->
+  <g opacity="0.6">
+    <path d="M 85 45 Q 95 55 95 60 Q 95 65 85 75" stroke="url(#waveGradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 90 40 Q 105 50 105 60 Q 105 70 90 80" stroke="url(#waveGradient)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 95 35 Q 115 45 115 60 Q 115 75 95 85" stroke="url(#waveGradient)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Microphone Body -->
+  <rect x="45" y="35" width="30" height="40" rx="15" ry="15" fill="url(#micGradient)" filter="url(#glow)"/>
+  
+  <!-- Microphone Grille -->
+  <g opacity="0.8">
+    <line x1="50" y1="45" x2="70" y2="45" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="70" y2="50" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="50" y1="55" x2="70" y2="55" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="50" y1="60" x2="70" y2="60" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="50" y1="65" x2="70" y2="65" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Microphone Stand -->
+  <rect x="57" y="75" width="6" height="15" fill="url(#micGradient)" opacity="0.8"/>
+  
+  <!-- Microphone Base -->
+  <ellipse cx="60" cy="92" rx="12" ry="4" fill="url(#micGradient)" opacity="0.8"/>
+  
+  <!-- AI Circuit Pattern -->
+  <g opacity="0.3">
+    <circle cx="25" cy="25" r="2" fill="#4facfe"/>
+    <circle cx="35" cy="20" r="1.5" fill="#f5576c"/>
+    <circle cx="20" cy="35" r="1" fill="#f093fb"/>
+    <line x1="25" y1="25" x2="35" y2="20" stroke="#4facfe" stroke-width="1"/>
+    <line x1="25" y1="25" x2="20" y2="35" stroke="#f093fb" stroke-width="1"/>
+    
+    <circle cx="95" cy="95" r="2" fill="#4facfe"/>
+    <circle cx="85" cy="100" r="1.5" fill="#f5576c"/>
+    <circle cx="100" cy="85" r="1" fill="#f093fb"/>
+    <line x1="95" y1="95" x2="85" y2="100" stroke="#4facfe" stroke-width="1"/>
+    <line x1="95" y1="95" x2="100" y2="85" stroke="#f093fb" stroke-width="1"/>
+  </g>
+  
+  <!-- Central Glow Effect -->
+  <circle cx="60" cy="55" r="20" fill="none" stroke="url(#waveGradient)" stroke-width="1" opacity="0.3"/>
+  
+  <!-- App Name Hint -->
+  <text x="60" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="url(#micGradient)" opacity="0.7">KNOUVAPP</text>
+</svg> 
