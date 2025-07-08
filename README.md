@@ -106,8 +106,8 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,max_split_size_mb:16
 ### Docker Deployment
 
 ```bash
-docker build -t knouvapp .
-docker run -p 8000:8000 --env-file .env knouvapp
+docker build -t ultravox-app .
+docker run --rm -it --gpus all -p 8765:8765 --env-file .env ultravox-app
 ```
 
 ## 💰 Affordable GPU Resources
